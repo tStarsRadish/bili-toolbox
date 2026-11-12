@@ -1,6 +1,7 @@
 # B站工具箱
 
 本工具全部使用AI生成
+使用模型deepseek-v4.1-flash
 
 给 B 站加两个小工具，一个 Chrome / Edge 扩展（Manifest V3）。
 
