@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>B站工具箱 · 设置</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-inner">
+          <img src="../icons/icon128.png" alt="" width="52" height="52" class="hero-icon" />
+          <div>
+            <h1>B站工具箱</h1>
+            <p class="sub">
+              两个工具：把 <code>vd_source</code>、<code>spm_id_from</code> 这类“你是谁、从哪来”的痕迹在链接离开浏览器前删干净；
+              并把 B 站视频一键转成 <code>91vrchat</code> 播放器地址。
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main class="grid">
+        <!-- 拦截层 -->
+        <section class="card">
+          <div class="card-title">
+            <h2>拦截位置</h2>
+            <span class="tag">四道防线，逐层兜底</span>
+          </div>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>地址栏去参</strong>
+              <em>页面加载后用 <code>history.replaceState</code> 静默替换 URL，不刷新、不丢进度。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="cleanAddressBar" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>复制时去参</strong>
+              <em>钩住页面里的 <code>navigator.clipboard</code> 与 <code>execCommand('copy')</code>，分享按钮复制出去的就是干净链接。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="stripOnCopy" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>网络请求去参</strong>
+              <em>用 <code>declarativeNetRequest</code> 在请求发出前删除参数，连第三方嵌入的播放器也拦得住。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="cleanNetwork" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>b23.tv 短链解析</strong>
+              <em>右键短链即可展开成 <code>BV</code> 正式地址并顺手清洗。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="parseShortLink" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>右键菜单</strong>
+              <em>在页面上提供“清本页 / 清链接 / 清剪贴板”三个动作。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="contextMenu" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>图标角标计数</strong>
+              <em>在扩展图标上显示今日清除数量。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="badge" />
+          </label>
+        </section>
+
+        <!-- 规则分组 -->
+        <section class="card">
+          <div class="card-title">
+            <h2>要删掉哪几类参数</h2>
+            <span class="tag">按用途分组</span>
+          </div>
+          <div id="groups" class="groups"></div>
+
+          <label class="row row-tight">
+            <div class="row-text">
+              <strong>保留播放进度</strong>
+              <em>永远不删 <code>t</code> / <code>start</code> / <code>end</code>，链接照样从第几分钟开始播。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="keepProgress" />
+          </label>
+        </section>
+
+        <!-- VRChat 播放器 -->
+        <section class="card span-2">
+          <div class="card-title">
+            <h2>VRChat 播放器（91vrchat）</h2>
+            <span class="tag">把 B 站视频转成播放器地址</span>
+          </div>
+
+          <p class="vr-intro">
+            生成格式固定为
+            <code>https://biliplayer.91vrchat.com/player/?url=&lt;BV号&gt;</code>
+            —— 只接受 BV 号，不接受 av 号，也不会发起任何网络请求。
+          </p>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>视频页显示悬浮栏</strong>
+              <em>在 B 站视频页右下角常驻一条悬浮栏，可展开、可复制、可新窗口打开。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="vrchatBar" />
+          </label>
+
+          <label class="row">
+            <div class="row-text">
+              <strong>进视频页自动复制</strong>
+              <em>打开视频就把播放器链接写进剪贴板。默认关闭，避免每次进视频都覆盖你的剪贴板。</em>
+            </div>
+            <input type="checkbox" class="switch" data-key="vrchatAutoCopy" />
+          </label>
+
+          <div class="field" style="margin-top: 14px">
+            <span class="field-label">转换测试</span>
+            <input
+              id="vr-test-input"
+              class="input"
+              type="text"
+              spellcheck="false"
+              value="https://www.bilibili.com/video/BV1UThizGEpK/?p=1&vd_source=abc"
+            />
+            <div class="actions" style="margin-top: 8px">
+              <button id="vr-test-btn" class="btn btn-primary">转换</button>
+              <button id="vr-test-copy" class="btn btn-ghost">复制结果</button>
+            </div>
+            <pre id="vr-test-out" class="out mono">—</pre>
+          </div>
+        </section>
+
+        <!-- 参数表 -->
+        <section class="card span-2">
+          <div class="card-title">
+            <h2>参数清单</h2>
+            <span class="tag" id="rule-count"></span>
+          </div>
+          <div class="filter-row">
+            <input id="rule-filter" class="input" type="search" placeholder="搜索参数名，例如 vd_source" />
+            <select id="rule-group" class="select">
+              <option value="">全部类别</option>
+              <option value="device">设备指纹</option>
+              <option value="share">分享与传播链</option>
+              <option value="spm">站内曝光与来源</option>
+              <option value="utm">通用营销参数</option>
+              <option value="pattern">前缀 / 正则</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>参数</th>
+                  <th>类别</th>
+                  <th>说明</th>
+                  <th class="col-state">状态</th>
+                </tr>
+              </thead>
+              <tbody id="rule-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 自定义 -->
+        <section class="card">
+          <div class="card-title">
+            <h2>自定义规则</h2>
+            <span class="tag">每行一个</span>
+          </div>
+          <label class="field">
+            <span class="field-label">额外移除的参数</span>
+            <textarea id="extra-params" class="textarea" rows="4" spellcheck="false" placeholder="例如&#10;my_track_id&#10;campaign"></textarea>
+            <em class="field-hint">命中即删，同样受下方“强制保留”约束。</em>
+          </label>
+          <label class="field">
+            <span class="field-label">强制保留的参数</span>
+            <textarea id="keep-params" class="textarea" rows="3" spellcheck="false" placeholder="例如&#10;t&#10;ep_id"></textarea>
+            <em class="field-hint">优先级最高，白名单里的参数永远不会被删。</em>
+          </label>
+          <div class="actions">
+            <button id="btn-save-custom" class="btn btn-primary">保存自定义规则</button>
+          </div>
+        </section>
+
+        <!-- 测试台 -->
+        <section class="card">
+          <div class="card-title">
+            <h2>试一试</h2>
+            <span class="tag">规则改了立刻生效</span>
+          </div>
+          <textarea id="sandbox-input" class="textarea mono" rows="4" spellcheck="false">https://www.bilibili.com/video/BV1GJ411x7h7?p=2&vd_source=7f3a9c1e8b2d4a6f&spm_id_from=333.788.recommend_more_video.0&share_source=copy_web&t=128</textarea>
+          <div class="actions">
+            <button id="btn-sandbox" class="btn btn-primary">清洗</button>
+          </div>
+          <pre id="sandbox-out" class="out mono">—</pre>
+          <ul id="sandbox-detail" class="detail"></ul>
+        </section>
+
+        <!-- 统计 -->
+        <section class="card span-2">
+          <div class="card-title">
+            <h2>统计</h2>
+            <span class="tag" id="stats-note"></span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-num" id="s-today">0</span>
+              <span class="stat-label">今日清除参数</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num" id="s-total">0</span>
+              <span class="stat-label">累计清除参数</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num" id="s-sites">0</span>
+              <span class="stat-label">涉及站点</span>
+            </div>
+          </div>
+          <div id="host-list" class="host-list"></div>
+          <div class="actions">
+            <button id="btn-reset-stats" class="btn btn-ghost">清零统计</button>
+            <button id="btn-reset-all" class="btn btn-ghost danger">恢复默认设置</button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <span>B站工具箱 v1.1.0 · 所有处理都在本地完成，不联网、不上传任何数据。</span>
+        <span id="save-state" class="save-state"></span>
+      </footer>
+    </div>
+    <script src="../shared/clean.js"></script>
+    <script src="../shared/store.js"></script>
+    <script src="../shared/vrchat.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+# 扩展私钥（用于给 .crx 签名以保持扩展 ID 不变）
+# 绝对不要提交：一旦泄露，等于任何人都能以你的名义发布「同名」扩展
+*.pem
+*.pfx
+*.p12
+*.key
+*.crx
+extension-key.json
+*.crx.key
+
+# 打包产物
+*.zip
+dist/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 调试和临时文件
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>B站工具箱</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="head">
+        <div class="brand">
+          <img src="../icons/icon48.png" alt="" width="28" height="28" />
+          <div class="brand-text">
+            <h1>B站工具箱</h1>
+            <p id="version">v1.1.0</p>
+          </div>
+        </div>
+        <button id="open-options" class="icon-btn" title="打开设置" aria-label="打开设置">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 15.4a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8Z"
+            />
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.1 13.9a1.5 1.5 0 0 0 .3 1.65l.05.05a1.8 1.8 0 1 1-2.55 2.55l-.05-.05a1.5 1.5 0 0 0-1.65-.3 1.5 1.5 0 0 0-.9 1.37V21a1.8 1.8 0 1 1-3.6 0v-.1a1.5 1.5 0 0 0-1-1.37 1.5 1.5 0 0 0-1.65.3l-.05.05a1.8 1.8 0 1 1-2.55-2.55l.05-.05a1.5 1.5 0 0 0 .3-1.65 1.5 1.5 0 0 0-1.37-.9H3a1.8 1.8 0 1 1 0-3.6h.1a1.5 1.5 0 0 0 1.37-1 1.5 1.5 0 0 0-.3-1.65l-.05-.05A1.8 1.8 0 1 1 6.67 6.8l.05.05a1.5 1.5 0 0 0 1.65.3H8.5a1.5 1.5 0 0 0 .9-1.37V5a1.8 1.8 0 1 1 3.6 0v.1a1.5 1.5 0 0 0 .9 1.37 1.5 1.5 0 0 0 1.65-.3l.05-.05a1.8 1.8 0 1 1 2.55 2.55l-.05.05a1.5 1.5 0 0 0-.3 1.65v.08a1.5 1.5 0 0 0 1.37.9H21a1.8 1.8 0 1 1 0 3.6h-.1a1.5 1.5 0 0 0-1.37.9Z"
+            />
+          </svg>
+        </button>
+      </header>
+
+      <!-- 工具切换 -->
+      <nav class="tabs" role="tablist">
+        <button class="tab is-active" data-tab="clean" role="tab" aria-selected="true">
+          清链
+        </button>
+        <button class="tab" data-tab="vrchat" role="tab" aria-selected="false">
+          VRChat 播放器
+        </button>
+      </nav>
+
+      <!-- ==================== 清链 ==================== -->
+      <div class="panel-body" data-panel="clean">
+        <section class="stats">
+          <div class="stat">
+            <span class="stat-num" id="stat-today">0</span>
+            <span class="stat-label">今日清除</span>
+          </div>
+          <div class="divider"></div>
+          <div class="stat">
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label">累计清除</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>当前页面</h2>
+            <span id="page-badge" class="pill pill-muted">未在 B 站</span>
+          </div>
+          <div class="url-box">
+            <code id="page-url">—</code>
+          </div>
+          <ul id="removed-list" class="removed"></ul>
+          <div class="row">
+            <button id="btn-clean" class="btn btn-primary">立即清洗本页</button>
+            <button id="btn-copy" class="btn btn-ghost">复制干净链接</button>
+          </div>
+          <p id="page-hint" class="hint"></p>
+        </section>
+
+        <section class="card">
+          <h2>一键开关</h2>
+          <label class="switch-row">
+            <span class="switch-text">
+              <strong>地址栏去参</strong>
+              <em>进入页面后静默替换 URL，不刷新</em>
+            </span>
+            <input type="checkbox" id="tg-address" class="switch" />
+          </label>
+          <label class="switch-row">
+            <span class="switch-text">
+              <strong>复制时去参</strong>
+              <em>页面里点“复制链接”自动清洗</em>
+            </span>
+            <input type="checkbox" id="tg-copy" class="switch" />
+          </label>
+          <label class="switch-row">
+            <span class="switch-text">
+              <strong>网络请求去参</strong>
+              <em>在请求发出前删掉追踪参数</em>
+            </span>
+            <input type="checkbox" id="tg-network" class="switch" />
+          </label>
+        </section>
+
+        <section class="card">
+          <h2>手动处理</h2>
+          <textarea
+            id="input-text"
+            class="textarea"
+            rows="3"
+            placeholder="粘贴含 B 站链接的文字，例如：&#10;https://www.bilibili.com/video/BV1xx411c7mD?vd_source=abc&spm_id_from=333.788"
+          ></textarea>
+          <div class="row">
+            <button id="btn-parse" class="btn btn-primary">清洗文本</button>
+            <button id="btn-short" class="btn btn-ghost">解析 b23.tv 短链</button>
+          </div>
+          <div id="result-host" hidden></div>
+        </section>
+      </div>
+
+      <!-- ==================== VRChat 播放器 ==================== -->
+      <div class="panel-body" data-panel="vrchat" hidden>
+        <section class="card vr-hero">
+          <div class="vr-hero-top">
+            <span class="vr-dot"></span>
+            <h2>VRChat 播放器链接</h2>
+          </div>
+          <p class="vr-desc">
+            把 B 站视频转成 <code>91vrchat</code> 播放器地址，直接粘进 VRChat 视频播放器。
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>当前视频</h2>
+            <span id="vr-badge" class="pill pill-muted">未检测到</span>
+          </div>
+          <div class="url-box">
+            <code id="vr-bvid">—</code>
+          </div>
+          <div class="url-box vr-url-box">
+            <code id="vr-url">—</code>
+          </div>
+          <div class="row">
+            <button id="vr-copy" class="btn btn-primary">复制播放器链接</button>
+            <button id="vr-open" class="btn btn-ghost">打开</button>
+          </div>
+          <p id="vr-hint" class="hint"></p>
+        </section>
+
+        <section class="card">
+          <h2>手动转换</h2>
+          <textarea
+            id="vr-input"
+            class="textarea"
+            rows="2"
+            placeholder="粘贴 B 站视频链接或 BV 号，例如：&#10;BV1UThizGEpK"
+          ></textarea>
+          <div class="row">
+            <button id="vr-convert" class="btn btn-primary">转换</button>
+            <button id="vr-convert-open" class="btn btn-ghost">转换并打开</button>
+          </div>
+          <div id="vr-result-host" hidden></div>
+        </section>
+
+        <section class="card">
+          <label class="switch-row">
+            <span class="switch-text">
+              <strong>在视频页显示悬浮栏</strong>
+              <em>B 站视频页右下角常驻，随时一键复制</em>
+            </span>
+            <input type="checkbox" id="tg-vrbar" class="switch" />
+          </label>
+          <label class="switch-row">
+            <span class="switch-text">
+              <strong>进视频页自动复制</strong>
+              <em>打开视频就把播放器链接写进剪贴板</em>
+            </span>
+            <input type="checkbox" id="tg-vrauto" class="switch" />
+          </label>
+        </section>
+      </div>
+
+      <footer class="foot">
+        <span id="foot-note">本地处理，不联网、不上传</span>
+      </footer>
+    </div>
+
+    <template id="tpl-result">
+      <div class="result">
+        <div class="result-head">
+          <span class="result-label"></span>
+          <button class="link-btn result-copy">复制</button>
+        </div>
+        <code class="result-text"></code>
+      </div>
+    </template>
+
+    <script src="../shared/clean.js"></script>
+    <script src="../shared/store.js"></script>
+    <script src="../shared/vrchat.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
